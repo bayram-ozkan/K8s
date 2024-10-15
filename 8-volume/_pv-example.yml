@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfsserver                           # PersistentVolume'un adı (benzersiz bir isim)
+spec:
+  capacity:                                 # Kulllanılabilir toplam depolama alanını belirtir. (50GB)
+    storage: 50Gi                           
+  volumeMode: Filesystem                    # Dosya sistemi türünü belirtir (alternatif olarak 'Block' da kullanılabilir)
+  accessModes:
+    - ReadWriteOnce                         # Sadece bir node üzerinde okuma-yazma yapılabilir.
+    - ReadWriteMany                         # Birden fazla node üzerinde okuma-yazma yapılabilir.
+  persistentVolumeReclaimPolicy: Delete     # PV kullanılmadığında silinsin (alternatif olarak 'Retain' ve 'Recycle' da kullanılabilir)
+  storageClassName: slow                    # Bu PV'nin hangi StorageClass ile ilişkilendirildiği ('slow' isimli StorageClass)
+  mountOptions:
+    - hard                                  # Mount işlemi sırasında bağlantı hatasında tekrar denemeyi zorunlu kılar.
+    - nfsvers=4.1                           # NFS sürümünü belirtir, burada NFS sürümü 4.1 kullanılıyor.
+  nfs:
+    path: /exports                          # NFS sunucusundaki paylaşılan dizin yolu.
+    server: 172.22.0.42                     # NFS sunucusunun IP adresi.
+
+

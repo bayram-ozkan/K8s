@@ -1,0 +1,71 @@
+
+##################################################################################################################################################################
+minikube
+
+
+egrep -c '(vmx|svm)' /proc/cpuinfo  ->  0  --> sanallaştırma kapalıdır.
+
+ 
+
+
+
+minikube start --driver=docker
+
+minikube start --driver=virtualbox
+
+
+
+$ minikube start 
+  default  değeri config set driver la ne ayarlarsan  öyle başlatılır
+
+
+$ minikube start --nodes=3
+  3 node lu bir cluster oluştutur
+
+$ minikube  delete
+
+
+
+
+$ minikube config set driver  docker
+
+
+
+
+
+
+
+$ minikube node list
+
+
+
+
+
+
+
+
+$ minikube tunnel 
+Minikube LoadBalancer türündeki servisler için IP ve erişim sağlar. (LoadBalancer)
+
+
+$ minikube node add
+
+  
+
+
+
+$ minikube  node delete minikube-m02
+
+
+
+
+minikube addons list
+
+
+
+minikube  addons enable ingress
+
+
+
+$ minikube service --url frontend
+

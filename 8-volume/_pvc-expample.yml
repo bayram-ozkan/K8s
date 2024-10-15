@@ -1,0 +1,11 @@
+apiVersion: v1                                  .
+kind: PersistentVolumeClaim                  
+metadata:
+  name: my-pvc                                  # PVC'nin adı.
+spec:
+  accessModes:                                  # Erişim modları; PVC'nin nasıl kullanılacağını tanımlar.
+    - ReadWriteMany                             # Birden fazla node üzerinde okuma-yazma izni.
+  resources:                                    # PVC için gerekli kaynaklar.
+    requests:                                   # İstenen kaynaklar.
+      storage: 5Gi                              # PVC'nin talep ettiği depolama alanı.
+  storageClassName: slow                        # PVC'nin ilişkilendirileceği StorageClass.

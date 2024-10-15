@@ -1,0 +1,4 @@
+*.crt
+keys.txt
+ip.txt
+.vscode/

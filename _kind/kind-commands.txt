@@ -1,0 +1,19 @@
+#############################################################################################################################################
+#####################################################    kind   ##############################################################################
+
+*Minikube, yerel bir Kubernetes (K8s) kümesi oluşturmak ve geliştirmek için kullanılan bir araçtır. Geliştiricilerin ve operatörlerin 
+Kubernetes ile uygulama geliştirme ve test yapmalarını kolaylaştırır. 
+
+
+
+
+# Belirtilen isimde bir clustar oluşturuyor
+    kind create cluster --name Node_Name
+
+# config dosyasına göre cluster ları oluşturur.
+    kind create cluster --config config.yml
+
+
+# Kind ile oluşturulan tüm cluster ları siliyor.
+kind delete clusters --all
+

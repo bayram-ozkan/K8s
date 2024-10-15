@@ -1,0 +1,14 @@
+# Equality based selectors allow for simple filtering (=, ==, or!=)
+
+selector:
+  matchLabels:
+    gpu: nvdia
+
+
+# Set-based selectors provides a method of filtering on a set of values and supports multiple operators (in, not in, exists)
+
+selector:
+  matchExpressions:
+  - key: gpu
+    operator: in
+    values: ["nvidia"]

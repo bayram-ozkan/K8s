@@ -1,0 +1,18 @@
+$ kubectl config get-context
+
+ * Mevcut Kubernetes yapılandırma dosyasında tanımlı olan tüm bağlamları (contexts) listelemeye yarar. Bu bağlamlar, 
+hangi Kubernetes kümesine bağlanacağını ve hangi kullanıcı kimlik bilgilerini kullanacağını belirtir. 
+   
+   Komutun çıktısında, her bağlam için küme adı (cluster), kullanıcı adı (user) ve ad alanı (namespace) gibi bilgiler bulunur. 
+Kullanıcı, bu bağlamlardan birini aktif hale getirerek kubectl komutlarının hangi kümede çalışacağını belirler.
+
+
+$ kubectl config current-context
+ * Mevcut aktif bağlamı (context) gösterir. Aktif bağlam, kubectl komutlarının hangi Kubernetes kümesi, kullanıcı ve ad alanı 
+ile çalışacağını belirler. 
+
+$ kubectl cluster-info
+*  Kubernetes kümesinin genel bilgilerini sağlar. Bu komut çalıştırıldığında, kümenin ana bileşenlerinin (API sunucusu, kube-dns, vb.) erişim URL'lerini ve durumlarını gösterir.
+
+
+

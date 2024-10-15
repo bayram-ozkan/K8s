@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodaffinitypod1
+spec:
+  containers:
+  - name: nodaffinitypod1
+    image: ozgurozturknet/k8s
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: app
+            operator: In #In, Notın, Exists, DoesNotExits
+            values:
+            - blue
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodaffinitypod2
+spec:
+  containers:
+  - name: nodaffinitypod2
+    image: ozgurozturknet/k8s
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - blue
+      - weight: 2
+        preference:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - red
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodaffinitypod3
+spec:
+  containers:
+  - name: nodaffinitypod3
+    image: ozgurozturknet/k8s
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: app
+            operator: Exists
+

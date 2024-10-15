@@ -1,0 +1,42 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: bluesvc
+spec:
+  selector:
+    app: blue
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: greensvc
+spec:
+  selector:
+    app: green
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: todosvc
+spec:
+  selector:
+    app: todo
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+

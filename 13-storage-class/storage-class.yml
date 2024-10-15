@@ -1,0 +1,11 @@
+apiVersion: storage.k8s.io/v1                       
+kind: StorageClass                                    
+metadata:
+  name: standarddisk                                   # StorageClass adı
+parameters:
+  cachingmode: ReadOnly                                # Önbellek modu; 'ReadOnly' olarak ayarlanmış
+  kind: Managed                                        # Depolama türü; yönetilen bir disk
+  storageaccounttype: StandardSSD_LRS                  # Depolama hesabı türü; Standart SSD, LRS ile
+provisioner: kubernetes.io/azure-disk                  # Sağlayıcı; Azure Disk kullanılıyor
+reclaimPolicy: Delete                                  # PVC silindiğinde PV'nin silinmesini sağlar
+volumeBindingMode: WaitForFirstConsumer                # PVC, bir Pod ile kullanıldığında bağlanır

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfigmap
+data:
+  db_server: "db.exapmle.com"
+  database: "mydatabase"
+  # db_username: "admin"
+# db_password: 
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmappod
+spec:
+  containers:
+  - name: configmapcontainer
+    image: ozgurozturknet/k8s:blue
+    env:
+    - name: DB_SERVER
+      valueFrom:
+        configMapKeyRef:
+          name: myconfigmap
+          key: db_server
+    - name: DATABASE
+      valueFrom:
+        configMapKeyRef:
+          name: myconfigmap
+          key: database
+    volumeMounts:
+    - name: config-vol
+      mountPath: "/secret"
+      readOnly: true
+  volumes:
+  - name: config-vol
+    configMap:
+      name: myconfigmap
+
+

@@ -1,0 +1,17 @@
+# apiVersion: batch/v1beta1  # not stable until kubernets 1.21
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hello
+  namespace: default
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            args: ['/bin/sh', '-c', 'date; echo Hello from the Kubernetes cluster']
+          restartPolicy: OnFailure

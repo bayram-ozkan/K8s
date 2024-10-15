@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: requestlimit
+  labels:
+    test: requestlimit
+spec:
+  containers:
+  - name: requestlimit
+    image: ozgurozturknet/stress
+    resources:    
+      requests:
+        memory: "64M"      # Minimum 64MB bellek talebi
+        cpu: "250m"        # Minimum 250 millicore (0.25 CPU) talebi
+      limits:
+        memory: "256M"     # Maksimum 256MB bellek kullanabilir
+        cpu: "0.5"         # Maksimum 0.5 CPU kullanabilir

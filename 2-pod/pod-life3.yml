@@ -1,0 +1,16 @@
+# failedpod   0/1     Pending             0          0s
+# failedpod   0/1     ContainerCreating   0          0s
+# failedpod   0/1     Error               0          3s
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: failedpod
+spec:
+  restartPolicy: Never
+  containers:
+  - name: failedpod
+    image: ubuntu:latest
+    command: ['sh', '-c', 'abc']
+

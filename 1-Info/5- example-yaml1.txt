@@ -1,0 +1,13 @@
+apiVersion: v1                      # Mapping : API versiyonu
+kind: Pod                           # Mapping : Kaynak türü (Pod)
+metadata:                           # Mapping : Pod UN metadata bilgileri
+  name: mypod                       # Scalar  : Pod un adı
+  namespace: developer              # Scalar  : Pod un hangi ad alanında bulunduğu
+  labels:                           # Mapping  : Pod u yönetmek için kullanılan etiketler
+    name: developer
+spec:                               # Mapping : Pod un özellikleri
+  containers:                       # Squence : Birden fazla container olabilir.
+  - name: nginx                     # Mapping : Container ismi
+    image: nginx:latest             # Scalar  : Container in oluşturulaçağı imaj ın ismi/sürümü
+    ports:                          # Sequence : Container un port ları
+      - containerPort: 80           # Scaler : Port numarası

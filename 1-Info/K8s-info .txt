@@ -1,0 +1,747 @@
+#############################################################################################################################################
+#####################################################     (Kubernetes) K8s   ##############################################################################
+
+* Kubernetes (K8s), container laştırılmış  uygulamaları otomatik olarak dağıtmak(deploy), ölçeklemek(scale) ve yönetmek için kullanılan  
+(Infrastrucete as code- IaC)  açık kaynaklı bir container orchesration  aracıdır. Google tarafından geliştirilen bu sistem, container 
+yönetimini ve orkestrasyonunu basitleştirir ve çeşitli bulut  ortamlarında veya yerel sunucularda çalışabilir. Ana bileşenleri şunlardır
+
+
+* Cluster 
+    Kubernetes platformunun temel yapı taşıdır ve birden fazla fiziksel veya sanal makineden ,oluşur.
+
+
+- Node
+    Kubernetes cluster indeki temel bileşenlerden birisidir. Cluster içinde çalışan bir veya birden fazla pod un
+    bulunduğu fiziksel veya sanal makinedir. Master ve worker node olarak ikiye ayrılır.
+
+    # Master Nod
+        Master node içende  ir çok farklı uygulamayı barındıran ve k8s için yönetici görevi üstlenen node olarak tanımlanır. 
+
+        ## Control Plane 
+            Kubernetes cluster içinde merkezi yönetim birimi olarak  hizmet verir.
+
+                ### API Server 
+                    Cluster daki tüm yönetim ve kontrol işlevleri API server üzerinden gerçekleşir. Kullanıcılar  veya
+                    araçlar API server a doğrudan erişebilir ve objeler oluşturabilir, güncelleyebilir veya silebilir.
+
+                ### etcd 
+                    Tutarlı ve izlenebilir bir key-value store olarak veritabanı görevini üstlenir
+
+                ### Controller Manager
+                    Cluster daki kaynakların belirlenen durumunu korumak ve sürdürmek için gerekli kontrol döngülerini
+                    yöneten bir bileşendir. Cluster'daki çeşitli bileşenlerin düzenli ve beklenen bir şekilde çalışmasını sağlar, 
+                    hata durumlarını tespit eder ve gerekli düzeltici önlemleri alır.
+
+                ### Scheduler 
+                    Yeni oluşturulan pod ların uygun bir node a atamaktan sorumludur ve cluster daki kaynakların en verimli
+                    şekilde kullanılmasına yardımcı olur. Belirli confügürasyon ve  yapılandırmalarla belirli  bir 
+                    pod un hangi worker node a yerleştirilceğine karar verir.
+
+    # Worker Node
+        Uygulamaların çalıştığı ve Kubernetes objelerinin gerçekten barındığı yerdir. Worker node bu objeleri yönetebilmek
+        için şu bileşenleri içerir.
+
+            # Kubelet
+                Kubernetes node daki temel bileşendir. Pod ların çalıştırılmasından sorumludur. Pod un sağlık durumunu ve
+                kaynak kullanımını takip eder, durumu Control Plane e rapor eder.
+
+            # Kube-proxy
+                Kubernetes daki ağ trafiğini yönetir. Cluster servisleri için bağlantı yönlendirme ve yük dengeleme işlemlerini gerçeleştirir.
+                Mevcut proxy modları:
+                    Userspace : Eski ve daha az verimli bir yöntemdir. Bağlantı yönlendirme ve yük dengeleme işlemleri kullanıcı alanında gerçekleşir
+                    iptables  : Ağ kuralları, iptables kullanılarak uygulanır. Daha verimli ve yaygın olarak kullanılan bir yöntemdir.
+                    ipvs (default, destekleniyorsa) : IP Virtual Server (ipvs) kullanılarak yapılan yük dengeleme, yüksek performans ve daha fazla özelleştirme seçeneği sunar.
+
+
+
+            # Container Runtime
+                CRI (Container Runtime Interface) uyumlu bir uygulamadır ve konteynerleri çalıştırıp yönetir.
+                Containerd, Cri-o, Rkt, Kata Containers(eski adıyla Clear Containers ve Hyper) , Virtlet
+
+
+
+- Pod
+    Bir veya daha fazla konteyneri barındıran en küçük Kubernetes birimidir. Pod, bir veya daha fazla konteyner için bir çalışma ortamı sağlar 
+    ve bu konteynerler arasında ağ ve depolama kaynaklarını paylaşır.
+   
+
+
+* Tüm Kubernetes bileşenleri sadece API Server ile iletişime geçerler. Hiçbir bileşen başka bir bileşenle doğrudan haberleşmez.
+
+* API Server, etcd bileşeni ile iletişime geçen tek bileşendir. Diğer bileşenlerin etcd ile doğrudan iletişime geçmesini engellenerek 
+lock mekanizması ve veri tutarlılığı sağlanmış olur.
+
+* High Availability için control plane bileşenleri aynı anda birden fazla node'da çalıştırılabilir. Fakat etcd ve API Server bileşenleri 
+active-active çalışabilirken Scheduler ve Controller Manager sadece active-passive çalışabilir.
+
+* En temel bileşen olan kubelet sistem bileşeni olarak kurulur ve çalıştırılır. Diğer bileşenler ise ise kubelet tarafından pod olarak çalıştırılır.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Kubernetes Networking
+
+    * Pod Network 
+        Pod lar arası iletişim için kullanılan ve bir CNI(Container Network Interface) eklentisi tarafından yönetilen bir küme genel ağdır. Her pod un diğer pod larla sorunsuz bir 
+        iletişim kurmasını sağlar. 
+            Container Network Interface
+                Loopback Plugin
+                Bridge Plugin
+                MACvlan Plugin
+                IPvlan Plugin
+                3th Party Plugin
+    * Service Network
+
+
+
+* Pod içindeki konteynerlar arasındaki iletişim  -> Bir pod içerisindeki tüm konteynerlar birbiriyle kesintisiz bir şekilde iletişim kurabilir.
+
+* Pod lar arasındaki iletişim -> Tüm pod lar NAT o olmadan birbiriyle iletişim kurabilirler.
+
+* Node ile Pod arasıdaki iletişim -> Tüm nod lar, NAT olmadan  tüm pod larla iletişim kurabilir.
+
+* Pod un görüntülediği IP -> Bir pod un kendi gördüğü IP, diğer pod lar ve nod lar tarafından görülen IP ile aynıdır.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Temel Ağ kuralları ve uygulamları
+
+    * Container-to-Container
+        Aynı ağ  ad alanında : Bir pod içindeki tüm konteynerlar aynı ağ ad alanı içinde bulunur ve aynı IP adresini paylaşır.
+
+        Yerel İletişim : Konteynerlar arasında localhost üzerinden doğrudan ve hızlı iletişim sağlar.
+
+    * Pod-to-Pod
+        Her pod yaşam döngüsü süresince benzersiz bir IP adresi alır.
+        Pod lar yeniden başlatıldığında veya başka bir pod oluşturulduğunda her pod un IP adresi değişebilir.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# Pod                           -> Bir veya daha fazla container  barındıran temel en küçük yönetim birimi.
+
+# Service                       -> Pod lar arasındaki ağ iletişimini ve yük dengelemesini yönetir.
+
+# Deployment                    -> Uygulamaların dağıtımını ve güncellemelerini yönetir.
+
+# Namespace                     -> Kaynakları izole etmek ve yönetmek için kullanılan mantıksal bölmeler.
+
+# ConfigMap ve Secret           -> Konfigürasyon ve gizli bilgileri yönetir.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Kubernetes kaynak yönetimi
+
+* Declarative
+    Kubernetes kaynaklarının durumunu bir yaml veya JSON dosyasında tanımlanarak yönetilmesini sağlar.
+    exp:
+        kubectl apply -f deployment.yaml
+
+* Imperative 
+    Kubernetes nesnelerini doğrudan komut satırından yönetmeyi sağlar
+    exp:
+        kubectl create deployment my-app --image=nginx
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+*******
+Namespaces
+
+    * Bir kubernetes cluster i içinde kaynakların mantıksal olarak izole edilmesini sağlayan bir kavramdır.Bir namespace birçok kubernetes nesnesini(pod, service,deployment)  
+        gruplandırmak için kullanılır ve bu nesnelerin enzersiz bir ad alanında çalışmasını sağlar.
+
+
+
+    default -> Bir namespace belirtilmediğinde, varsayılan olarak atanmış namespace tir. Başka bir namespace atanmamış her nesne burada oluşturulur.
+
+    kube-system -> K8s tarafından oluşturulan nesneler ve kaynaklar içn kullanılan özel bir namespace tir. K8s in kendisine ait bileşenlerin yönetildiği alandır.
+
+    kube-public -> Özel bir namespace tir. Tüm kullanıcılar tarafındna okunabilir. Genellikle cluster başlangıç ve yapılandırması ve ayarlar içn ayrılmıştır.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+*******
+Labels (Etiketler)
+
+    * Nesneleri veya kaynakları tanımlamak, açıklamak ve ilişkili gruplar oluşturmak için kullanılan key-value çiftleridir.
+    * Labels benzersizlik özelliği taşımamaktadır.
+    * Belirli bir söz dizimi vardır ve sınırlı bir karakter kümesi kullanılarak tanımlanır.
+
+
+*******
+Selectors (Seçiciler)
+
+    * Kubernetes nesneleri seçmek ve yönetmek için kullanılan bir mekanizmadır.
+
+
+
+*******
+Annotations
+
+    * Kubernetes’te bir kaynağın metadata’sını açıklamak ve ek bilgiler sağlamak için annotations kullanılır. Annotations lar, key-value çiftlerinden oluşur ve kaynakların 
+    tanımlanmasına yardımcı olabilir. Farklı araçlar ve sistemler, bir kaynağın tanımlanmasına ek bilgiler sağlamak için annotations kullanabilirler.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+*******
+# Services
+
+    * Bir veya daha fazla pod un sağladığı işlevselliği dış dünyaya veya diğer pod lara erişebilir hale getiren bir soyutlama katmanıdır. 
+    * Load balancing işlemleri içn kube-proxy kullanılır. Bu, hizmet gelen trafiği hedef pod lar arasında dağıtır. Kube-proxy her hizmet
+        için ana makinenin iptables yapılandırmasında yerel girişler oluşturan bir daemon olarak çalışır. Bu ağ trafiğinin doğru pod lara yönlendirilmesini sağlar
+
+
+static cluster - uniqu IP
+static namespaced DNS name
+
+<service name>. <namespace> svc. cluster.local
+      
+db-service.dev.svc.cluster.local      
+                    ------------
+                          └───  domain
+               ---          
+                └─────────────  Service  
+           ---
+            └─────────────────  Namespace
+----------
+    └─────────────────────────  Service Name
+
+web.default.svc.cluster.local
+
+
+## Service Types
+
+    ClusterIP(default) : Yalnızca cluster içendeki diğer bilenler tarafından erişilmesine izin verir, dışarıdan erişim yoktur. Her ClusterIP servisleri
+        cluster içinde benzersiz bir sanal IP adresine sahiptir, bu da hizmetin güvenilir bir şekilde tanımlanmasını sağlar.
+
+    NodePort: Dışarıdan erişim için belirli bir pod üzerinden erişim sağlar. Node üzerinde açılan port lar sayesinde  kullanıcılar doğrudan IP ve port üzerinden
+        erişebilir. Port statik olarak tanımlanabilir ya da 30000-32767 arasında dinamik bir değer alabilir.
+    
+    LoadBalancer : Cluster dışında uygulamalara erişim imkanı sağlar. Pod lara dışarıdan erişim sağlar. Gelen trafiği birden fazla node üzerinde dağıtarak yük dengeleme yapar. Uygulamanın daha performanslı 
+        çalışmasını sağlar.  LoadBalancer hizmetleri genellikle bulut sağlayıcılarla entegre bir şekilde çalışır.
+    
+    ExternalName : Harici bir DNS ismini bir service olarak kullanmamıza olanak sağlar.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+*******
+# Pod
+    * K8s üzerinde oluşturabileçeğimiz ve yönetebileçeğimiz en küçük birimdir. Kubernetes iş yüklenin temel yapı taşıdır. 
+    * Pod lar birden fazla container i içerebilir ve bu container lar  aynı disk alanı, ağ alanını paylaşır ve tek bir context içinde çalışır.
+    * Her Pod un eşsiz bir id si bulunur.
+
+
+
+## Pod un yaşam döngüsü
+
+    * Pending : Pod oluşturulmuş ancak henüz çalıştırılmaya başlamamıştır. Bu durum, kaynakların mevcut olup olmadığını veya pod'un düzeltilmesini bekleyen sorunlar olup olmadığını gösterir.
+
+    * Creating : Pod, ilgili kaynakları oluştururken geçici olarak bu durumda olabilir. Bu adım genellikle Pending durumunun bir parçası olarak görülür.
+    
+
+    * Running : Pod'un container'ları başarıyla başlatılmış ve çalışıyor. Pod'un tüm container'ları çalışır durumda olduğunda bu duruma geçilir.
+
+    * Succeeded : Pod'un tüm container'ları başarılı bir şekilde çalıştı ve tamamlandı. Pod, bu aşamadan sonra yeniden başlatılmaz.  
+
+    * Failed : Pod'un container'larından en az biri başarısız oldu ve pod, başarılı bir şekilde çalışamaz hale geldi. Bu durumda pod yeniden başlatılmaz.
+
+    * Unknown : Pod'un durumu hakkında bilgi edinilemez. Genellikle, pod'un bulunduğu düğüm ile iletişim problemi olduğunda ortaya çıkar.
+
+    * ImagePullBackOff :  Pod'un container'ını başlatmaya çalışırken, Docker görüntüsünü çekemediğinde ortaya çıkar. Bu, genellikle yanlış bir görüntü adı, yetkilendirme hatası veya ağ sorunlarından kaynaklanabilir.
+
+    * CrashLoopBackOff  : Bu, çökme döngüsünde olan, başarısız olan ve tekrar tekrar yeniden başlayan belirli bir kapsayıcı için geri alma gecikme mekanizmasının şu anda yürürlükte olduğunu gösterir.
+
+
+## Pod larda  RestartPolicy
+
+    * Always : Herhangi bir sonlandırmadan sonra container ı yeniden başlatır.
+
+    * OnFailure : Bir hata durumunda container i yeniden başlatır.
+
+    * Never : Container çalışıp kapanır yeniden başlatmaz. 
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+*******
+# Deployment
+
+    * Pod ları yönetmek için geliştirilmiş  bir kaynak türüdür. Yüksek erişebilirlik ve ölçeklenebilirlik sağlamak amacıyla pod ların oluşturulması, güncellenmesi ve
+        yönetilmesi için kullanılır.
+    * Pod ların veri saklama ve paylaşma amacıyla volume lere  bağlanmasını sağlar.
+    * Pod lar belirli bir etiketlerle seçilir. Bu etiketler, Deployment ın hangi pod ları oluşturaçağını ve yöneteçeğini belirler.
+    * Deployment, belirli sayıda Pod ın her zaman çalışır durumda olmasını sağlar. "replicas" alanı ile bu sayı belirlenir.
+    * Güncellemelerde yaşanabilecek sorunlara karşı, önceki sürüme geri dönme yeteneği sağlar.
+
+## Strategy Types
+    Pod ları güncelleme yöntemini türüne göre açıklar. 
+
+            Recreate : Mevcut Pod lar sonlandırılır ve yeni Pod lar oluşturulur.
+            
+            RollingUpdate: Pod lar kademeli olarak güncellenir. maxSurge ve maxUnavailable parametreleri ile kontrol sağlanır.
+
+            Blue/Green : Bu strateji için deployment da iki sürüm tutulur. Çalışan sürüm için Blue, yeni sürüm için yeşil. İkisi arasındaki
+                trafiği yönetmek için kubernetes hizmetleri kullanılır.
+
+            Canary : Belirli bir pod lar yeni sürüme geçilir. Yeni  sürüm hakkında feedback lere bakılarak  pod ların hepsi yeni sürüme geçilir.
+            
+        Pod lar belirli etiketlerle seçilir. Bu etiketler, Deployment ın hangi Pod ları oluşturaçağını ve yöneteçeğini belirler. 
+
+## Autoscaling a Deployment
+    * Pod larda autoscaling i HPA (Horizontal Pod Autoscaler)
+
+## Deployment Kullanım Durumları 
+
+    * Statelss Uygulamalar : Web sunucuları ve API ler giib durum(state) gerektirmeyen uygulamalara
+
+    * Ölçeklenebilirlik : Pod sayısı yatak olarak artırıp azaltma gereksinimi.
+
+    * Rolling Update : Uygulamayı kesintisiz olarak güncelleme ihtiyacı.
+
+    * Basit  Konfigürasyon : Karmaşık durum yönetimi gerektirmeyen durumlar
+
+    * Geçiçi Depolama : Verinin geçici olduğu ve kalıcılık gerekmeyen senaryolar 
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*******
+# ReplicaSet
+
+    * Kubernetes da çalışan bir grup pod un belirtilen sayısa  çalışmasını sağlamak için kullanılan ir kubernetes kaynağıdır.
+    * Yalnızca pod ların sayısı yönetilir.
+    * Pod lar oluşturulur ve ölçeklenir, ancak güncellemeler ve versiyon yönetimini yönetmez.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+********
+# StatefullSet
+ 
+    * Kubernetes te durum bilgisi olan uygulamların yönetilmesi için kullanılan bir nesne türüdür.
+    * StatefullSet her bir pod un kimliğini(isim, ağ kimliği, disk vb.) korur ve düzgün bir şekilde ölçeklendirme, yeniden başlatma ve güncelleme yapmayı sağlar.
+
+## StatefullSet Özellikleri 
+
+    * Sabit kimlik : Her bir pod a benzersiz bir kimlik atanır ve bu kimlik, pod sırasıyla korunur.Pod yeniden başlatılsa bile bu kimlik kaybolmaz.
+
+    * Sıralı Dağıtım ve Güncelleme :  Pod lar sırasıyla oluşturulur  ve güncellenir. Bir pod başarılı olmadan  sonraki pod başlatılmaz. Bu sayede  uygulamaların başlatma, yeniden başlatma veya ölçeklendirme
+        gibi işlemlerinde sıralı ve öngürülebilir davranışlar sağlar.
+
+    * Stable Network Identity : Her pod, benzersiz  bir ağ kimliğine sahip olur ve bu kimlik pod yeniden başlatılsa bile korunur. Bu sayede diğer uygulamaların ve servislerin uygulamaya güvenli bir şekilde bağlanabilmesini sağlar
+
+    * Stable Storage : Her pod için bağımsız  bir kalıcı depolama alanı(PersistentVolume) kullanılır, böylece veriler pod yeniden başlatılsa bile korunur. Verilerin güvenli bir şekilde saklanmasını ve 
+        uygulama örneklerinin verilere erişimini sürdürmesini sağlar.
+
+## StatefullSet Kullanım Durumları 
+
+    * Stateful Uygulamalar : Veritabanları, mesajlaşma sistemleri gibi durum(state) gerektiren uygulamalar.
+
+    * Sabit DNS İsimleri : Her pod un sabit bir DNS ismine sahip olması gereken durumlar.
+
+    * Kalıcı Depolama : Her pod için kalıcı ve ayrılmış depolama alanı gereksinimi.
+
+    * Sıralı Güncellemeler : Pod larrın sıralı ve belirli bir sırayla güncellenmesi gereken durumlar.
+
+    * Yüksek Durum Yönetimi : Durum yönetimi ve sıralı başlatma gereksinim olan senaryolar.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*******
+# DaemonSet
+
+    * Kubernetes te bir pod un, her bir node üzerinde çalıştırılmasını sağlamak amacıyla kullanılan bir nesnedir. Eğer bir DaemonSet oluşturursanız, bu DaemonSet e bağlı pod, clustur daki her bir node üzerinde  
+        otomatik olarak başlatılır. Bu, özellik log toplama, sistem monitor edilmeis gibi her bir node da çalışan işlemler için kullanılır.
+
+## DaemonSet  Özellikleri
+
+    * Her Node da Pod çalıştırma : DaemonSet ile her pod her node üzerinde otomaitk olarak çalışır.
+
+    * Node Eklendiğinde Otomatik Pod Başlatma : Cluster a yeni bir node eklenirse, DaemonSet bu node da bir pod başlatır.
+
+    * Cluster dan Node Çıkartıldığında Pod Silme : Cluster dan bir node ayrılırsa. o node üzerinde çalışan pod otomatik olarak silinir.
+
+    * Node Pool ve Tolerantions ile Esneklik : DaemonSet, belirli node larda çalışacak şekilde özelleştirilebilir.  tolerations ve nodeSelector kullanarak DaemonSet i 
+        sadece belirtilen label lara sahip node lar üzerinde çalıştırabilirsiniz.
+
+
+
+## DaemonSet Kullanım Alanları 
+
+    * Node Bazında Uygulamar : Her node üzerinde çalışması gereken uygulamlar. (log toplayıcıları)
+
+    * Node a Özgü İhtiyaçlar : Her node da tekil bir Pod un bulunması gereken durumlar.
+
+    * Sistem ve İzleme Araçları : Node seviyesinde sistem izleme ve yönetim Araçları
+
+    * Sabit Çalışan Pod lar : Her node da sürekli olarak çalışan uygulamlar
+
+    * Otomatik Dağıtım : Yeni node lara otomatik olarak  pod dağıtımı yapılması gereken durumlar. 
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Resource Quota 
+
+    * Belirli bir namespace  i.çindeki kaynakların(CPU, bellek, pod sayısı, vb.) sınırlarını tanımlamak için kullanılır. 
+    * Bu bir ekip veya uygulamanın belirli kaynakları aşmasını önler
+
+
+## Özellikler 
+
+    * Kaynak kontrolü : Namespace içindeki toplam kaynak kullanımını sınırlar.
+
+    * Adil Paylaşım : Farklı uygulamalar veya ekipler arasında kaynakların adil bir şekilde dağıtımını sağlar.
+
+    * Hata önleme : Aşırı  kaynak kullanımını önleyerek uygulamaların kararlılığını artırır.
+
+
+## Resource Quota ile Sınırlandırılabilen Kaynaklar 
+    
+    * Pod sayısı : Bir namespace içinde oluşturulabilecek pod sayısını sınırlayabilirsiniz.
+
+    * CPU ve Bellek : Bir namespace içinde kullanılabilecek CPU ve bellek miktarını sınırlandırabilirsiniz.
+
+    * Persistentvolumeclaims (PVC) : Depolama içn oluşturulacak kalıcı hacim taleplerini sınırlayabilrisiniz.
+ 
+    * Services : Namespace içinde oluşturulabilecek servis sayısını sanırlandırabilirsiniz.
+
+    * ConfigMap ve Secrets : Oluşturulacak ConfigMap vev  Secret nesnelerinin sayısını sınırlayabilirsiniz.
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# PersistentVolume (PV)
+
+    * Kalıcı bir depolama kaynağını temsil eder.
+    * PV ler bir cluster genelinde kullanılan ve arka planda  bir depolama sağlayısına (NFS, GCEPersistentDisk, RDB, vb.) bağlı kaynaklardır.
+    * Genellikle bir sistem yöneticisi tarafından sağlanır.
+    * Yaşam döngüleri bir Pod dan bağımsız olarak yönetilir.
+    * Bir Pod a doğrudan bağlanmazlar. Bunun yerine PersistentVolumeClaim (PVC) aracılığla kullanılır.
+    * PV ler default namespace de oluşturuluyor.
+
+
+## PVC Yaşam Döngüsü
+        * Provisioning : PV tanımlanır ve oluşturulur.
+
+        * Binding : PVC oluşturulduğunda uygun bir PV bulunur ve bağlanır (durum: "Bound").
+
+        * In use :  Pod içinde PV kullanılmaya başlanır.
+
+        * Reclaiming: PV durumu, ReclaimPolicy ayarına göre "Recycle", "Retain" veya "Delete" olarak belirlenir.
+
+##  PV Phase (Aşamaları)
+        * Avaible : PV oluşturulduktan sonra, herhangi bir PVC tarafından talep edilene kadar kullanılabilir durumda bekler.
+
+        *  Bound : Bir PVC, PV ye bağlandığında bu aşama gerçekleşir.
+
+        * Released : PVC silindiğinde PV serbest bırakılır.
+
+        * Failed : PV nin geri kazanılmasında bir sorun yaşandığında bu aşamaya girer.
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# PersistentVolumeClaims (PVC)
+
+    * Belirli bir namespace içinde yapılan depolama talebedir.
+    * PVC, doğrudan bir depolama kaynağına bağlanma yerine, bir dizi gereksinimi karşılar.
+    * Bir uygulamanın depolama talebenin birçok farklı altyapı veya sağlayıcı üzerinde taşınabilir olmasını sağlar.
+    * PVC, bir uygulamanın gereksinim duyduğu depolama miktarı, erişim modu(okuma/yazma) ve performansa gibi kriterleri belirtir.
+    * PVC ler bizim belirlediğmiz  bir namespacede oluşturuluyor.
+    * PVC nin storage kapasitesi PV den büyük olmaması gerekiyor.
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# StorageClass
+
+    * Storage clases farklı türdeki depolama kaynaklarını bir araya getirerek, yöneticilere belirli politikalar veözellikler belirleme imkanı sunar.
+    * Depolama sınıfları, dış depolama sistemi ile iş birliği içinde çalışarak dinamik olarak depolama sağlama yeteneği sunar. PVC talep edildiğinde otomatik olarak
+        uygun bir PV nin oluşturulmasını sağlar.
+    * Depolama sınıfları sayesinde, PVC talep edildiğinde uygun bir PV otomatik olarak sağlanabilir.
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Volume
+    * Pod un yaşam döngüsüne bağlı olarak kullanılan depolama alanıdır.
+    * Bir Po, bir veya daha fazla türde volume e sahip olabilir.
+    * Pod içindeki tüm container lar  bu volume ları kullanabilir.
+    Pod yeniden başlatıldığında volume lar varlıklarını korur, ancak verilerin kalıcılığı volume türüne  bağlıdır.
+
+
+## volumes -> Pod a eklenmesi gereken volum nesnelerinin bir listesi. Listed ebulunan her nesne, kendine özgü bir isme sahip olmalıdır.
+
+## volumeMounts  -> Pod a eklenen volum lerin isimleri ve mount edildiği klasörleri belirttiğimiz bölümdür.
+
+## Volume Çeşitleri
+
+        * Host  Based
+
+                * EmptyDir
+                * hostPath
+                * Local
+
+        * Block Storage
+
+                * Amazon EBS
+                * OpenStack Cinder
+                *GCE Persistent disk
+                *Azure Disk
+                * vSphere Volume
+
+        * Distributed File system
+
+                * NFS
+                
+        * Others 
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Ingress
+
+    * Kubernetes ortamında dış dünyadan gelen HTTP ve HTTPS trafiğini yönetmek için kullanılan bir kaynak türüdür. Ingress, belirli bir  
+    kurallara göre  gelen trafiği bir veya  daha fazla servise yönlendirir. Bu uygulamaların dışardan erişimini kolaylaştırır ve yük dengeleme, 
+    SSL sonlandırma gibi işlevleri destekler.
+
+    ## Ingress Controller
+    * Ingress kaynaklarını yöneten bileşendir. En çok kullanılan NGINX, Traefik ve HAProcxy dir.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Configuration
+
+    * Kubernetes yapılandırmayı uygulama veya container dan ayırmak için entegre bi desen sunar.
+    * Bu desen iki Kubernetes bileşenini kullanır.
+
+        ## ConfigMaps : Yapılandırma verilerini yönetir ve uygulamaların bu verilere erişimini sağlar. ConfigMaps, genellikle yapılandırma dosyalarını, ortam
+            değişkenlerini ve diğer konfigürasyon bilgilerini içerir.
+
+
+        ## Secrets : Hassas verileri, örneğin şifreleri, API anahtarlarını ve diğer bilgileri güvenli bir şekilde yönetir. Secrets, bu bilgilerin şifrelenmiş
+            ve güvenli bir şekilde saklanmasını sağlar.
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# ConfigMap
+
+    * Kubernetes içinde dışa aktarılşmış veriler saklanır.
+
+## Bu veriler çeşitli yollarla referans alınabilir.
+
+        * Ortam değişkenleri : Uygulama konteynerlerine ortam değişlenleri aracılığıyla erişim sağlar.
+
+        * Komut satırı argümanı (ortam değişkeni aracılığla): Ortam değişkenlerinden elde edilen veriler, komut satırı argümanları olarak kullanılabilir.
+
+        * Volume mount olarak dosya olarak enjekte edilme : Veriler, bir volume mount aracılığla dosya olarak konteyner içine enjekte edilebilir.
+
+## Veriler şu şekilde oluşturula bilir.
+
+        * Manifest : Yapılandırma dosyaları kullanılarak.
+
+        * Literals : Doğrudan belirtilmiş değerler.
+
+        * Volume mount : Dizinlerden veri alınarak.
+
+        * Dosyalar : Doğrudan dosyalardan veri okunarak.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Secret 
+
+    * Secrets yapılandırma bilgilerini saklamak için ConfigMap ile benzer şekilde çalışır ancak hassas verilerin yönetimi için özel olarak tasarlanmıştır.
+    * Secrets içindeki veriler base64 formatında kodlanarak saklanır.
+    * Secrets, etcd veri tabanında şifrelenmiş olarak saklanır. (if configured!)
+    * Kullanıcı adı/şifreler, sertifikalar veya konteynerde saklanmaması gereken diğer hassas bilgiler için idealdir.
+    * Bir manifest, literal, volume mount veya dosya üzerinden oluşturulabilir.
+
+## Secret Types
+
+    * docker-registery : Genellikle Docker registry veya diğer konteyner repo ları için kullanıcı adı/şifre bilgilerini içerir.
+
+    * generic/Qpaque : Farklı kaynaklardan alınan literal değerler saklanır.
+
+    * tls : Sertifika temelli secret
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Role Based Access Control (RBAC)
+
+    * Sistemdeki kullanıların ve uygulamlaarın kaynaklar aerişimini yönetmek için kullanılan bir erişim kontrol modelidir.
+    * Kubernetes RBAC i kullanarak güvenli bir erişim yönetimi sağlar.
+
+## RBAC için kullanılan Verbs
+
+    * get : Kaynağı görmek (okuma)
+
+    * list : Kaynakları listelemek
+
+    * watch : Kaynakları izlemek (değişiklikleri gözlemlemek)
+
+    * create : Yeni bir kaynak oluşturmak
+
+    * update : Mevcut kaynağı güncellemek
+
+    * delete : Kaynakları silmek
+
+## RBAC bileşenleri 
+
+    * Role :  Bİr kubernetes namespace inde hangi kaynaklara ve işlemlere izin verilediğini belirler. Yalnızca belirli bir namespace için geçerlidir.
+
+    * ClusterRole : Cluster genelinde kullanılabilen roller sağlar. Hem namespace içi hem de cluster-wide işlemleri kapsar.
+
+    * RoleBinding : Bir role elirli bir kullanıcıyı veya grubu bağlar. Sadece o namespace için geçerlidir.
+
+    * ClusterRoleBinding : Cluster-wide bir role kullanıcıuı veya grubu bağlar. Bu role tanımla izinler cluster genelinde geçerli olur.
+
+## RBAC bileşenleri ilişkisi 
+
+    * Role/ ClusterRole  : İzinlerin tanımlandığı yer.
+
+    * RoleBinding/ ClusterRoleBinding : Bu izinlerin kime atanaçağını belirler.
+
+
+## RBAC ile Servis Hesapları
+    
+    * Yalnızca kullanıcıları değil, aynı zamanda ServiceAccount adı verilen bu sistem kullanıcıları da kapsar.
+
+
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Liveness probe
+
+Readiness probe
+
+
+*******
+Cpu
+
+
+*******
+Environment Variable
+
+
+
+
+
+
+
+*******
+Secret
+8tip
+
+
+
+
+*******
+affinity
+    node affinity  -> Bu node şurda oluşturulsun
+    pod affinity   -> Bu pod şurda oluşturulsun
+
+
+
+
+
+
+
+*******
+
+Taint ve Toleration  -> Bu worker ımım üzerinde sadece şu po dlar çalıştırılsın
+
+
+
+
+
+
+
+
+
+
+
+*******
+Ephemeral volume
+
+
+********
+
+Container Storage Interface (CSI)
+
+
+
+
+
+
+
+
+
+
+********
+Job
+cronjob
+
+
+
+
+
+
+
+********
+Authentication
+
+
+Authentication  -> kim doğrulama  "söylediği kişi mi ?"
+Authorization   -> yetki kontrolü  "eyleme yetkisi var mı ?"
+
+
+RBAC  (role-based acsess control)
+
+role ve role binding
+
+
+Role        -> namespace çapında yetki verir.
+ClusterRole -> belirlenen yetkiler cluster seviyesinde  yetki verir.
+
+
+
+********
+ServiceAccount
+
+uygulamarın haberleşmesi için 
+
+
+
+
+
+
+
+

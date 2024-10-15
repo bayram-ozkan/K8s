@@ -1,0 +1,19 @@
+# crashloopbackpod   0/1     Pending             0              0s
+# crashloopbackpod   0/1     ContainerCreating   0              0s
+# crashloopbackpod   1/1     Running             0              5s
+# crashloopbackpod   0/1     Completed           0             24s
+# crashloopbackpod   1/1     Running             1 (3s ago)    27s
+# crashloopbackpod   0/1     Completed           1 (23s ago)   47s
+# crashloopbackpod   0/1     CrashLoopBackOff    1 (14s ago)   60s
+# crashloopbackpod   1/1     Running             2 (16s ago)   62s
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crashloopbackpod
+spec:
+  restartPolicy: Always
+  containers:
+  - name: crashloopbackpod
+    image: ubuntu:latest
+    command: ['sh', '-c', 'echo "Hello Kubernetes!" && sleep 20']

@@ -1,0 +1,713 @@
+# Control Plane bileşenlerini sağlık durumunu gösterir.
+$ kubectl get componentstatuses 
+
+
+# ~/.kube/config dosyasını içeriğini gösterir.
+$ kubece config view
+
+
+
+# Kullanılan aktif context bilgilerini gösterir.
+$ kubectl config view --minify
+
+
+# Kullanılan aktif context bilgililerini json formatinda gösterir.
+$ kubectl config view --minify --output=json
+
+
+
+# kubeconfig.yml dosyasını dahil etmeden başka bir cluster a bağlanabiliriz.
+kubectl --kubeconfig=dosya_adi-config.yaml get nodes 
+
+
+
+
+$ kubectl drain master --ignore-daemonsets
+
+
+
+kubectl drain minikube-m02  --ignore-daemonsets
+node u durdurur
+
+kubectl uncordon minikube-m02
+nodu u başlatır.
+
+-------
+
+
+
+-------
+
+
+-------
+## Init container
+
+  * Kubernetes'te bir pod içindeki başlatma işlemlerini yapmak için kullanılan özel bir container türüdür. Init container lar, pod'un ana konteynerleri başlatılmadan önce ç
+alıştırılır ve genellikle yapılandırma, veri hazırlığı veya ön koşul işlemleri gibi  işleri yapmak için kullanılır. Init container başarıyla bitmeden bir sonraki (bizim ana istediğimiz ) 
+containerlar başlayamaz.  Eğer init containerı hata alırsa, hata gidene kadar pod onu restart eder. ( restartPolicy belirtilmediyse ) 
+
+
+kubectl get pod 
+
+kubectl get pod -A
+
+kubectl get pods -o wide
+
+kubectl describe pods  firstpod
+
+
+kubectl logs firstpod
+
+kubectl logs  -f firstpod
+
+kubectl run firstpod --image=nginx --restart=Never
+
+kubectl exec firstpod -- hostname
+
+kubectl exec -it firstpod -- bash
+
+kubectl delete pods firstpod
+
+kubectl explain pod
+
+kubectl apply -f pod.yml
+
+
+kubectl edit pods firstpod
+
+
+kubectl pods -w 
+
+/bin/bash
+/bin/sh
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Multi Container yönetimi
+
+kubectl exec -it  multicontainer -c webcontainer -- sh
+
+kubectl exec -it  multicontainer -c sidecarcontainer  -- sh
+
+kubectl logs -f  multicontainer -c sidecarcontainer 
+
+kubectl logs -f  multicontainer -c webcontainer 
+
+
+
+Container port-forward
+
+
+kubectl port-forward pod/multicontainer 8080:80
+
+
+
+
+###############################################################################################################################################
+labels
+
+
+# Mevcut pod ların label larını listeler
+kubectl get pods --show-labels
+
+# Mevcut deployment  ların label larını listeler
+kubectl get deployment  --show-labels
+
+
+
+# Çalışan podların içinde app  isimli label a sahip olan pod ları listeler.
+kubectl get pods -l "app" --show-labels
+
+
+# Çalışan podların içinde app label ının myapp a eşit olduğu pod ları listeler.
+kubectl get pods -l "app=myapp" --show-labels
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Selectors
+
+* Kubernetes te label selectors(etiket seçiciler) kullanarak nesneleri filtrelemek  ve yönetmek için iki selector tipi  vardır: 
+Equality-Based ve Set-Based  label selectors. Her iki yöntem de etiketlere göre seçim yapmayı sağlar, ancak farklı türde sorgular yapmanıza izin verir.
+
+
+Selector Types
+
+  Equality-Based Label Selectors : Etiketlerin belirli bir değere eşit olup olmadığını veya eşit olmayanları kontrol eder.
+
+
+kubectl get pods -l "app=firstapp" --show-labels
+
+kubectl get pods -l "app=firstapp, tier=frontend" --show-labels
+
+kubectl get pods -l "app=firstapp, tier!=frontend" --show-labels
+
+
+----------------------------
+
+
+  Set-Based Label Selectors : Etiketlerin belirli bir değer kümesinde olup olmadığını veya bu kümede olmayanları kontrol eder.
+
+
+
+kubectl get pods -l "app in (firstapp)" --show-labels
+
+kubectl get pods -l "app notin (firstapp)" --show-labels
+
+kubectl get pods -l "app, app notin (firstapp)" --show-labels
+
+
+kubectl get pods -l '!app' --show-labels
+
+
+
+----------------------------
+
+
+
+kubectl get  pods -l "app in (first,secondapp)" --show-labels     >>  kubectl get pods -l "app=secondapp" --show-labels
+
+
+kubectl get pods -l "app in (firstapp), tier notin (frontend)" --show-labels    >>  kubectl get pods -l "app=firstapp, tier!=frontend" --show-labels
+
+
+kubectl label pods pod9 app=3.app
+pod/pod9 labeled
+
+
+kubectl label pods pod9 app-
+pod/pod9 unlabeled
+
+
+kubectl label --overwrite pods pod9 team=teamthird
+pod/pod9 labeled
+
+
+kubectl label pods --all foo=bar
+pod/pod1 labeled
+pod/pod10 labeled
+pod/pod11 labeled
+pod/pod2 labeled
+...
+
+
+----------------------------
+
+
+kubectl annotate pods annotationpod foo=bar
+
+
+kubectl annotate pods annotationpod foo-
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------------
+namespace  -> ns
+
+ 
+
+# Cluster ları listeler
+$ kubectl config get-contexts
+
+
+# Cluster değiştirir.
+$ kubectl config use-context cluster_name 
+
+
+# Cluster daki namespace leri listeler
+$ kubectl get namespaces
+$ kubectl get ns
+
+
+# Tüm namespace deki pod ları listeler.
+$ kubectl get pods --all-namespaces
+
+
+# Belirtilen namespace deki pod ları listeler.
+$ kubectl get pods --namespace <namespace-name>
+
+
+# Namespace lerin labels ini listeler
+$ kubectl get ns --show-labels
+
+
+# default namespace i değiştirir.
+$ kubectl config set-context --current --namespace <namespace-name>
+
+# Hangi namespace de çalıştığımızı gösterir.
+kubectl config view --minify --output 'jsonpath={..namespace}'
+
+
+# Yeni bir namespace oluşturur.
+$ kubectl create namespace <namespace-name>
+
+
+# Bu yaml dosyasında tanımlanan bilgilerle hem bir namespace oluşturdur hemde bu namespace e dahil bir pod oluşturduk.
+$ kubectl apply -f podnamespace.yml 
+  namespace/development created
+  pod/namespacepod created
+
+
+
+# Development namespace indeki pod lari listeler.
+$ kubectl get pods -n development
+
+
+# development namespace indeki namespacepod isimli pod a bağlanır.
+kubectl exec -it  namespacepod -n development -- /bin/bash
+kubectl exec -it -n developmeny namespacepod -- bash
+
+
+
+$ kubectl delete namespaces development
+  namespace "development" deleted
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------
+# İlk olarak bir pod oluşturuyorsunuz
+$ kubectl run firstpod --image=nginx:latest --restart=Never
+
+# Ardından bu pod'un YAML çıktısını alıp dosyaya kaydediyorsunuz
+$ kubectl get pod firstpod -o yaml > firstpod.yml
+
+
+
+# Bir deployment oluşturuyorsunuz
+$ kubectl create deployment firstdeployment --image=nginx:latest --replicas=2
+
+# Bu deployment'ın YAML çıktısını alıp dosyaya kaydediyorsunuz
+$ kubectl get deployment firstdeployment -o yaml > deployment.yaml
+
+
+
+
+# Belirtilen dosyayı belirtilen pod taki belirtilen klasöre kopyalar.
+$ kubectl cp dosya_adi pod_adi:/tmp
+
+
+# Belirtilen pod taki dosyayı localde belirtilen yere kopyalar.
+$ kubectl cp  pod_adi:/tmp/dosya_adi.txt /tmp/dosya_aditxt
+
+
+
+----------------------------------------------------------------------------------------------------------------
+# Rollout & Rollback
+
+* Rollout
+   Kubernetes üzerind bir deployment gerçekleştiğinde veya güncellendiğinde uygulanan süreçtir.
+   Yeni bir sürüm deploy edildiğindebu süreç adım adım çalışarak yeni pod ların oluşturulması ve eski pod ların
+      kaldırılmasını sağlar.
+   Kesintisiz bir şekilde yeni  sürümün devreye alınmasını sağlar.
+
+* Rollback
+    Kubernets her dağıtım güncellemesi sırasında  bir sürüm geçmişi tutar.
+    Eğer bir güncelleme sırasunda  bir hata veya  beklenmeyen bir sorun ortaya çıkarsa bu işlem sayesinde 
+      bir önceki sürüme geri dönebilirsiniz.
+
+
+$ kubectl rollout status deployment nginx-deployment 
+$ kubectl rollout status deployment/nginx-deployment
+# deployment ın durumunu kontrol eder.
+
+
+$ kubectl rollout history deployment 
+# deployment  geçmişini listeler.
+
+
+# Verilen deployment daki pod ların sürümünü vs günceller.
+kubectl set image deployment/firstdeployment nginx=nginx:1.19
+
+
+$ kubectl rollout undo deployment nginx-deployment 
+# Yapılan bir önceki sürüme geri döner.
+
+# kubectl rollout undo deployment nginx-deployment --to-revision 2
+
+
+kubectl scale deployment firstdeployment --replicas=5
+
+kubectl delete deployments firstdeployment
+
+
+
+
+kubectl cp  my-simple-pod.yaml my-simple-pod:/tmp
+
+
+
+
+kubectl apply -f deploymenttemplate.yml
+
+$ kubectl set image deployment/firstdeployment nginx=httpd
+  deployment.apps/firstdeployment image updated
+
+$ kubectl rollout undo deployment firstdeployment 
+  deployment.apps/firstdeployment rolled back
+
+
+----------------------------
+
+
+$ kubectl set image deployment rcdeployment nginx=httpd
+  deployment.apps/rcdeployment image updated
+
+
+
+
+$ kubectl edit deployment rolldeployment  --record
+  Flag --record has been deprecated, --record will be removed in the future
+  deployment.apps/rolldeployment edited
+
+$ kubectl set image deployment rolldeployment httpd=httpd:alpine --record=true  
+  Flag --record has been deprecated, --record will be removed in the future
+  deployment.apps/rolldeployment image updated
+
+
+$ kubectl rollout history deployment rolldeployment 
+
+
+$ kubectl rollout history deployment rolldeployment --revision=3
+
+kubectl rollout undo deployment rolldeployment
+
+
+$ kubectl rollout undo deployment rolldeployment --to-revision=3
+
+
+$ kubectl rollout status deployment rolldeployment -w
+
+
+$ kubectl rollout pause deployment rolldeployment 
+  deployment.apps/rolldeployment paused
+
+$ kubectl rollout resume  deployment rolldeployment 
+  deployment.apps/rolldeployment resumed
+
+
+$kubectl expose deployment backend --type=ClusterIP --name=backend
+  service/backend exposed
+
+
+$ kubectl expose deployment frontend --type=NodePort --name=frontend
+  service/frontend exposed
+
+
+$ kubectl get endpoints
+  NAME         ENDPOINTS                                   AGE
+  backend      10.244.0.3:80,10.244.0.4:80,10.244.0.7:80   2m8s
+  frontend     10.244.0.5:80,10.244.0.6:80,10.244.0.8:80   70s
+  kubernetes   192.168.49.2:8443                           15m
+
+
+
+kubectl describe endpoints frontend 
+
+
+----------------------------
+
+kubectl port-forward pods/envpod 8080:80
+
+
+
+--------------------------------------------------------
+
+
+
+$ kubectl apply -f secret.yml 
+  secret/mysecret created
+
+
+$ kubectl get secrets 
+  NAME       TYPE     DATA   AGE
+  mysecret   Opaque   3      13s  
+
+
+kubectl describe secrets mysecret
+
+
+$ kubectl create secret  generic mysecret2    --from-literal=db_server=db.example.com  --from-literal=db_username=admin  --from-literal=db_password=P@ssw0rd!
+  secret/mysecret2 created
+
+
+$ kubectl create secret  generic mysecret3    --from-file=db_server=1server.txt  --from-file=db_username=2username.txt  --from-file=db_password=3password.txt 
+    secret/mysecret23created
+
+
+$ kubectl create secret generic mysecret5 --from-file=config.json 
+
+
+
+--------------------------------------------------------
+
+
+$ kubectl taint node minikube platform=production:NoSchedule
+  node/minikube tainted
+
+
+
+
+$ kubectl taint node minikube platform-
+  node/minikube untainted
+
+
+$ kubectl taint node minikube color=blue:NoExecute
+  node/minikube tainted
+
+--------------------------------------------------------
+
+
+
+
+$ docker volume create  nfsvol
+
+$ docker network create \
+    --driver=bridge \
+    --subnet=10.255.255.0/24 \
+    --ip-range=10.255.255.0/24 \
+    --gateway=10.255.255.10 \
+    nsfnet
+
+
+$ docker run -dit --privileged --restart unless-stopped -e SHARED_DIRECTORY=/data  -v nfsvol:/data --network nsfnet  -p 2049:2049 --name nfssrv ozgurozturknet/nfs:latest
+
+
+mPolicy: The Recycle reclaim policy is deprecated. Instead, the recommended approach is to use dynamic provisioning.
+  persistentvolume/mysqlpv created
+
+
+
+
+--------------------------------------------------------
+
+# Persistent Volume (pv)
+
+# Kubernetes de persistentvolume nesnelerini listeler.
+$ kubectl get pv
+
+
+
+
+# Kubernetes de  belirtilen persistentvolume  nesnesini siler.
+$ kubectl delete pv mysqlpv
+
+
+
+--------------------------------------------------------
+
+# PersistentVolumeClaim (pvc)
+
+
+# Kubernetes de PersistentVolumeClaims nesnelerini listeler.
+$ kubectl ge pvc
+
+
+# Kubernetes de  belirtilen PersistentVolumeClaims  nesnesini siler.
+kubectl  delete pvc mysqlclaim 
+
+--------------------------------------------------------
+
+Storage Clasess (sc)
+
+# Kubernetes de StorageClass nesnelerini listeler.
+$ kubectl get sc
+
+--------------------------------------------------------
+
+# Kubernetes da secret ları listeler.
+$ kubectl get secret
+
+# Kubernetes de ConfigMap leri listeler.
+$ kubectl get cm
+
+
+--------------------------------------------------------
+
+
+$ kubectl scale statefulset  cassandra --replicas=3
+  statefull.apps/cassandra scaled
+
+
+
+
+--------------------------------------------------------
+
+
+$ kubectl get jobs
+  NAME   STATUS    COMPLETIONS   DURATION   AGE
+  pi     Running   0/10          61s        61s
+
+
+
+
+$ kubectl apply  -f job.yml 
+  job.batch/pi created
+
+
+
+
+$ kubectl delete jobs.batch pi 
+  job.batch "pi" delete
+
+
+
+-------------------------------------------------------
+
+
+$ kubectl apply -f cronjob.yml 
+  cronjob.batch/hello created
+
+
+
+$ kubectl get cronjobs
+  NAME    SCHEDULE      TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+  hello   */1 * * * *   <none>     False     0        22s             4m29s
+
+
+
+
+
+--------------------------------------------------------
+
+
+
+$ kubectl apply -f user-crt.yml 
+  certificatesigningrequest.certificates.k8s.io/testuser created
+
+$ kubectl get csr
+or
+$ kubectl  get certificatesigningrequests.certificates.k8s.io  
+  NAME        AGE     SIGNERNAME                                    REQUESTOR              REQUESTEDDURATION   CONDITION
+  csr-hjkts   28m     kubernetes.io/kube-apiserver-client-kubelet   system:node:minikube   <none>              Approved,Issued
+  testuser    8m49s   kubernetes.io/kube-apiserver-client           minikube-user          <none>              Pending
+
+
+$ kubectl certificate approve testuser
+  certificatesigningrequest.certificates.k8s.io/testuser approved
+
+
+$ kubectl get csr
+  NAME        AGE     SIGNERNAME                                    REQUESTOR              REQUESTEDDURATION   CONDITION
+  csr-hjkts   31m     kubernetes.io/kube-apiserver-client-kubelet   system:node:minikube   <none>              Approved,Issued
+  testuser    2m12s   kubernetes.io/kube-apiserver-client           minikube-user          <none>              Approved,Issued
+
+
+
+
+
+
+
+--------------------------------------------------------
+
+$ kubectl config current-context 
+  test-user
+
+
+kubectl apply -f . 
+  clusterrolebinding.rbac.authorization.k8s.io/read-secrets-global created
+  clusterrole.rbac.authorization.k8s.io/secret-reader created
+  rolebinding.rbac.authorization.k8s.io/read-pods created
+  role.rbac.authorization.k8s.io/pod-reader created
+
+
+$ kubectl get roles
+  NAME         CREATED AT
+  pod-reader   2024-08-22T09:45:31Z
+
+
+$ kubectl get rolebindings.rbac.authorization.k8s.io 
+  NAME        ROLE              AGE
+  read-pods   Role/pod-reader   94s
+
+
+$ kubectl get roles.rbac.authorization.k8s.io 
+  NAME         CREATED AT
+  pod-reader   2024-08-22T09:45:31Z
+
+
+kubectl get clusterrole
+
+kubectl get clusterrolebindings.rbac.authorization.k8s.io 
+
+
+
+--------------------------------------------------------
+
+
+
+$ kubectl apply -f service-account.yml 
+  serviceaccount/testsa unchanged
+  role.rbac.authorization.k8s.io/podread unchanged
+  rolebinding.rbac.authorization.k8s.io/testsarolebinding created
+  pod/testpod unchanged
+
+$ kubectl get sa
+or
+$ kubectl get serviceaccounts 
+  NAME      SECRETS   AGE
+  default   0         3h19m
+  testsa    0         5m15s
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+$ curl   --insecure https://kubernetes
+  {
+    "kind": "Status",
+    "apiVersion": "v1",
+    "metadata": {},
+    "status": "Failure",
+    "message": "forbidden: User \"system:anonymous\" cannot get path \"/\"",
+    "reason": "Forbidden",
+    "details": {},
+    "code": 403
+  }
+
+
+$ ls /var/run/secrets/kubernetes.io/serviceaccount
+  a.crt     namespace  token
+
+
+$ TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token),
+
+
+$ echo $TOKEN 
+  eyJhbGciOiJSUzI1NiIsImtpZCI6IlVaMjQ5Um1Wa0JlLVRDQ19BOHN4SURQYXp0SUlnZFhCcVZvRjBtZ3hZT2sifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjLmNsdXN0ZXIubG9jYWwiXSwiZXhwIjoxNzU1ODU3NzMwLCJpYXQiOjE3MjQzMjE3MzAsImlzcyI6Imh0dHBzOi8va3ViZXJuZXRlcy5kZWZhdWx0LnN2Yy5jbHVzdGVyLmxvY2FsIiwianRpIjoiNzFjNTQxZGYtOTQwNi00YjFjLTlhODAtZmYyNTYzZWY4ZWI0Iiwia3ViZXJuZXRlcy5pbyI6eyJuYW1lc3BhY2UiOiJkZWZhdWx0Iiwibm9kZSI6eyJuYW1lIjoibWluaWt1YmUiLCJ1aWQiOiI1Y2VlYmRlMy00MjYyLTRlYzktYTIxMS01OTU2YzA1OGJjOGUifSwicG9kIjp7Im5hbWUiOiJ0ZXN0cG9kIiwidWlkIjoiYzU2ZjQwNGUtOTQwMS00MGUwLWI4MTYtODU5NTgxODA0NmVhIn0sInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJ0ZXN0c2EiLCJ1aWQiOiJlZjYyZWYwNy0xZWI5LTQ1M2YtOTYwYy04MDM0NjZhZTM3MDkifSwid2FybmFmdGVyIjoxNzI0MzI1MzM3fSwibmJmIjoxNzI0MzIxNzMwLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDp0ZXN0c2EifQ.uBJVJPACJB6Xa5puWxxEutxlyf1RK5kAOyDekFSMjyTTWZvIX9cFw3Apsl28dxHeIR5eFLA-ky9b74twIzm86dHJWAPv_DnRJxxtcskWAA5vEi7zt0ZAm4p_tTjRvZRIWboWoeCHz9JbiKc7M1ZQd1wII9EuS1K7e-7Z0beTwq5p3kQvSxSW-2Ie7GeOY8Uv7n4KVLxFLDOybhOgAlkw93ZLccD9V7hc2FJaJC6N7cAr7wuNDtWNbXpHbFtJjEvxcBUb_aFterVi0GS84p_tyCJM0LfDc5erbHFjw0goLik6XC-ndEPCJhJ9MFwHCoFSBmc3CUxIk73UKT70EniGUQ
+
+
+$ curl --insecure https://kubernetes  --header "Authorization:Bearer $TOKEN" 
+  {
+    "kind": "Status",
+    "apiVersion": "v1",
+    "metadata": {},
+    "status": "Failure",
+    "message": "forbidden: User \"system:serviceaccount:default:testsa\" cannot get path \"/\"",
+    "reason": "Forbidden",
+    "details": {},
+    "code": 403
+  }
+
+
+
+$ curl --insecure https://kubernetes/api/v1/namespaces/default/pods  --header "Authorization:Bearer $TOKEN" 
+
+
+$ curl --insecure https://kubernetes/api/v1/namespaces/default/pods  --header "Authorization:Bearer $TOKEN"  | jq '.items[].metadata.name'
+    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                  Dload  Upload   Total   Spent    Left  Speed
+  100 17130    0 17130    0     0   380k      0 --:--:-- --:--:-- --:--:--  380k
+  "imageerrorpod"
+  "testpod"
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+kubectl get all -n ingress-nginx 

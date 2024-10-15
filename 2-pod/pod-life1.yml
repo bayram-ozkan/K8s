@@ -1,0 +1,14 @@
+# imageerrorpod   0/1     Pending             0          0s
+# imageerrorpod   0/1     ContainerCreating   0          0s
+# imageerrorpod   0/1     ErrImagePull        0          4s
+# imageerrorpod   0/1     ImagePullBackOff    0          5s
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: imageerrorpod
+spec:
+  containers:
+  - name: imageerrorpod
+    image: nxinzz
+

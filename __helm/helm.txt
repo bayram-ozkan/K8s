@@ -1,0 +1,27 @@
+
+# Homebrew ile kurulum
+$ brew install helm
+
+
+# wordpress isimli  bir wordpress kurar.
+$ helm install  my-wordpress bitnami/wordpress 
+
+# wordpress i kaldırır
+$ helm uninstall my-wordpress
+
+# Kurulu tüm helm leri getirir.
+$ helm list -A
+
+# Helm reposuna yeni repo ekledik
+$ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+# Repo ları listeler
+$ helm repo list
+
+# Repoyu günceller
+$ helm repo update
+
+
+# Yeni bir namespace oluşturur ve o namespace de ingress kurar.
+$ helm install ingress-nginx ingress-nginx/ingress-nginx \
+    --namespace ingress-nginx --create-namespace

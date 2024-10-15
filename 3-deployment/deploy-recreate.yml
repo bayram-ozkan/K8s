@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rcdeployment
+  labels:
+    team: development
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: rcdeployment
+  # Pod güncellerken eski versiyonları kaldırır. Tüm pod ları sil sonra oluştur.
+  strategy:
+    type: Recrate
+  template:
+    metadata:
+      labels:
+        app: recreate
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80

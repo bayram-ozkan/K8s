@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: firstdeployment
+  labels:
+    team: development
+spec:
+  replicas: 3
+  selector:
+    # Yöneteceği pod un adını belirtiyoruz (frontend)
+    matchLabels:
+      app: frontend
+  #Oluşturmak istediğimiz 3 adet pod un özelliklerini belirtiriz.
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+

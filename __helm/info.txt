@@ -1,0 +1,35 @@
+
+#############################################################################################################################################
+#####################################################   Helm  ##############################################################################
+
+* Kubernetes  uygulamlarını yönetmek ve dağıtmak için kullanılan bir paket yöneticisidir.
+* Uygulamalarımızı paketler haline getirmemizi ve ya hazır paketleri tek bir komut ile kubernetes e yüklememizi sağlar.
+
+
+# Chart  
+    * Helm uygulamalarının paketleridir.
+    * Bir chart, ıygulama bileşenlerini, yapılandırmalarını ve bağımlılıklarını tanımlar. 
+    * Her chart, bir dizin yapısına sahiptir ve Kubernetes kaynaklarını yanımlayan yaml dosyaları içerir.
+
+# Release
+    * Bir chart ın belirli bir sürümünün Kubernetes kümesine dağıtılmasıdır. 
+    * Her release, bir isimle tanımlanır ve istedildiğinde silinilebilir.
+
+# Repository
+    * Helm chart larının saklandığı bir yerdir.
+    
+
+demo
+├── charts                                  # Bu klasör, bağımlı chart'lar için kullanılır. Chart ın meta verilerini içerir.
+├── Chart.yaml                              # Bu dosya, Chart'ın meta verilerini içerir (adı, versiyonu, açıklama, vs.).
+├── templates                               # Şablon dosyalarını içerir. Kubernetes kaynaklarının tanımları burada yer alır.
+│   ├── deployment.yaml                     # Deployment nesnesi için şablon dosyası.
+│   ├── _helpers.tpl                        # Yardımcı fonksiyonlar ve şablonlama fonksiyonları burada tanımlanır.
+│   ├── hpa.yaml                            # Horizontal Pod Autoscaler (HPA) nesnesi için şablon.
+│   ├── ingress.yaml                        # Ingress kaynaklarının şablon dosyası.
+│   ├── NOTES.txt                           # Helm Chart yüklendiğinde kullanıcıya gösterilen bilgi notları.
+│   ├── serviceaccount.yaml                 # ServiceAccount tanımlamaları için şablon.
+│   ├── service.yaml                        # Service nesnelerinin tanımlandığı şablon dosyası.
+│   └── tests                               # Helm test dosyaları.
+│       └──── test-connection.yaml          # Uygulamanın test edilmesi için bir bağlantı testi.
+└── values.yaml                             # Varsayılan yapılandırma değerlerini içeren dosya. Kubernetes kaynaklarının nasıl yapılandıçağını belirtir.

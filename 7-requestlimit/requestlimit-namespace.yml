@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: my-resource-quota
+  namespace: my-namespace          # Kısıtlamaların uygulanacağı namespace
+spec:
+  hard:                            # Kesin kaynak limitleri (hard limits)
+    requests.cpu: '4'              # Namespace içinde toplamda en fazla 4 CPU talep edilebilir.
+    requests.memory: 8Gi           # Namespace içinde toplamda en fazla 8 GiB bellek talep edilebilir.
+    limits.cpu: '10'               # Namespace içinde toplamda en fazla 10 CPU limiti olabilir.
+    limits.memory: 16Gi            # Namespace içinde toplamda en fazla 16 GiB bellek limiti olabilir.
+    pods: '2'                      # Namespace içinde toplamda en fazla 2 pod olabilir.
+    persistentvolumeclaims: '5'    # Namespace içinde en fazla 5 PVC (Persistent Volume Claim) olabilir.
+    requests.storage: 5Gi          # Namespace içinde toplamda en fazla 5 GiB depolama talep edilebilir.

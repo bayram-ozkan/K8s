@@ -1,0 +1,85 @@
+192.168.1.200 docker1.k8s.local docker1
+192.168.1.52  docker2.k8s.local docker2
+192.168.1.53  docker3.k8s.local docker3
+192.168.1.54  docker4.k8s.local docker4
+
+
+
+kubectl delete replicaset odevim-deployment-6f69768579   #replicaset i belirterek odevim-deployment-6f69768579 adli replicaset siliyoruz
+
+
+
+#docker image oluştur adı ödevim1 (dockerhub)
+
+#docker file oluştur.
+
+
+DockerFile
+FROM --> Sürüm ve kullanılacak image
+WORKDIR --> Dockerfile in dosyaları çekeceği yer
+COPY --> Dockerı	
+
+
+docker build -t odevim1 .   #bulunduğun dizinde -t ile odevim1 isminde  oluşturur.
+
+docker tag odevim1 kullaniciadi/odevim1  #dockerhub a pushlamak için tag oluşturur.
+
+docker push kullanıcı_adı:repo_adi
+
+
+
+kubectl get nodes #sisteme eklenen workerları listeliyor
+
+kubectl apply -f pod.yml  # pod oluşturuyor
+
+kubectl get pod   #oluşturulan podları listeliyor
+
+
+kubectl get services
+
+kubectl get pods   
+
+
+
+FLANNEL_NETWORK=10.240.0.0/16
+FLANNEL_SUBNET=10.240.0.1/24
+FLANNEL_MUT=1450
+FLANNEL_IPMASQ=true
+
+
+nano /run/flannel/subnet.env  #pod lara random IP arsalığı yerine subnet tanımlıyoruz
+#Master ve worker makineler makinelerde subnet leri değiştir.
+
+
+
+
+kubectl get pods -o wide
+
+
+
+
+#! /bin/bash
+
+set -x
+
+# See https://github.com/kubernetes/kubernetes/issues/70202
+# Run as root (e.g. with sudo)
+
+mkdir -p /run/flannel
+
+cat << EOF > /run/flannel/subnet.env
+FLANNEL_NETWORK=10.244.0.0/16
+FLANNEL_SUBNET=10.244.0.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+EOF
+
+systemctl restart kubelet
+systemctl restart docker
+
+
+
+
+
+
+

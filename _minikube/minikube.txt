@@ -1,0 +1,25 @@
+#############################################################################################################################################
+#####################################################    minikube   ##############################################################################
+
+*Minikube, yerel bir Kubernetes (K8s) kümesi oluşturmak ve geliştirmek için kullanılan bir araçtır. Geliştiricilerin ve operatörlerin 
+Kubernetes ile uygulama geliştirme ve test yapmalarını kolaylaştırır. 
+
+
+minikube start
+ * Minikube kümesini başlatır. Varsayılan olarak, bir sanal makine oluşturur ve Kubernetes kümesini kurar.
+
+minikube status
+ * Minikube kümesinin durumunu gösterir. Kümenin çalışıp çalışmadığını ve bileşenlerin durumunu kontrol eder.
+
+minikube stop
+ * Minikube kümesini durdurur. Küme durur ancak yapılandırma ve veriler korunur.
+
+minikube delete
+ *  Minikube kümesini siler. Bu, tüm yapılandırma ve verileri kaldırır.
+
+minikube logs
+ * Minikube un log kayıtlarını gösterir.
+
+minikube Dashboard
+ *  Kubernetes Dashboard'ı başlatır ve varsayılan web tarayıcınızda açar. Dashboard, Kubernetes kümelerini yönetmek için bir web arayüzü sağlar.
+

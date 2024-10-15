@@ -1,0 +1,17 @@
+# succeededpod   0/1     Pending             0          0s
+# succeededpod   0/1     Pending             0          0s
+# succeededpod   0/1     ContainerCreating   0          0s
+# succeededpod   1/1     Running             0          4s
+# succeededpod   0/1     Completed           0          24s
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: succeededpod
+spec:
+  restartPolicy: Always
+  containers:
+  - name: succeededpod
+    image: ubuntu:latest
+    command: ['sh', '-c', 'echo "hello Kubernates" && sleep 20']

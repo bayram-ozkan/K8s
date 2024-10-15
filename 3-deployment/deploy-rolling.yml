@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rolldeployment
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: rolling
+  strategy:
+    # Default olanıdır.Pod lardaki değişiklerikleri  podlara nasil uygulanması gerektiğini yönetir. Pod ları  belirlenen değerlere göre kademeli silip oluşturur.
+    type: RollingUpdate
+    rollingUpdate:
+      # Ayakta kalacak pod sayısı
+      maxUnavailable: 2
+
+      # Pod lar ikişer ikişer güncellensin.
+      maxSurge: 2
+
+  template:
+    metadata:
+      labels:
+        app: rolling
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
