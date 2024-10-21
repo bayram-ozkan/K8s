@@ -1,4 +1,6 @@
 *.crt
 keys.txt
 ip.txt
+Jenkinsfile
+wordpress.sh
 .vscode/
