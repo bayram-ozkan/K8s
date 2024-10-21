@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding                  # Cluster genelinde yetki
+metadata:
+  name: sr-cluster-rb
+subjects:
+- kind: Group
+  name: senior    # Grubun adı
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view      # ne yetkisi olacak
+  apiGroup: rbac.authorization.k8s.io  
