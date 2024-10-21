@@ -1,3 +1,5 @@
+# nginx üzerinden wordpress kurulum aşamaları
+
 sudo apt install nginx -y
 sudo systemctl status nginx
 sudo apt install php-fpm php-mysql php-xml php-curl php-mbstring -y
