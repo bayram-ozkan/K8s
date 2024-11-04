@@ -2,31 +2,23 @@
 
 Kubernetes (K8s), konteynerleştirilmiş uygulamaları otomatik olarak dağıtmak (deploy), ölçeklendirmek (scale) ve yönetmek için kullanılan açık kaynaklı bir **Infrastructure as Code (IaC)** aracıdır. Google tarafından geliştirilen bu sistem, konteyner yönetimini ve orkestrasyonunu basitleştirir ve hem bulut ortamlarında hem de yerel sunucularda çalışabilir. 
 
-
 ![Kubernetes Yapısı ](resimler/k8s-architecture.png)
-
-
-
 
 ## Cluster
 
 Kubernetes platformunun temel yapı taşıdır ve birden fazla fiziksel veya sanal makineden oluşur.
 
----
-
-### Node
+## Node
 
 Kubernetes cluster'ındaki temel bileşenlerden biridir. Cluster içinde çalışan bir veya birden fazla pod'un bulunduğu fiziksel veya sanal makinedir. Master ve worker node olarak ikiye ayrılır.
 
----
 
-
-#### Master Node
+## Master Node
 
 Master node, Kubernetes cluster'ını yöneten node'dur ve yönetim görevlerini üstlenir. İçinde birçok bileşen barındırır.
 
-##### Control Plane
 
+###### Control Plane
 Kubernetes cluster'ının merkezi yönetim birimidir. Cluster’ın genel durumu buradan yönetilir.
 
 ###### API Server
@@ -41,31 +33,28 @@ Cluster'daki kaynakların belirlenen durumda kalmasını sağlar. Kaynakları iz
 ###### Scheduler
 Yeni oluşturulan pod'ların hangi node'da çalışacağını belirler. Cluster içindeki kaynakların verimli kullanımını sağlar.
 
----
-
-#### Worker Node
+## Worker Node
 
 Uygulamaların çalıştığı, Kubernetes objelerinin gerçekten barındığı node'lardır. Worker node şu bileşenleri içerir:
 
-##### Kubelet
+###### Kubelet
 Her worker node'da bulunan temel bileşendir. Pod'ların çalıştırılmasından sorumludur. Pod'un sağlık durumunu ve kaynak kullanımını takip eder ve durumu Control Plane'e rapor eder.
 
-##### Kube-proxy
+###### Kube-proxy
 Kubernetes'deki ağ trafiğini yönetir. Cluster servisleri için bağlantı yönlendirme ve yük dengeleme işlemlerini gerçekleştirir. Kube-proxy, farklı modlarda çalışabilir:
 
 - **Userspace**: Eski ve daha az verimli bir yöntemdir. Bağlantı yönlendirme işlemleri kullanıcı alanında gerçekleşir.
 - **iptables**: Daha verimli bir yöntemdir. Ağ kuralları iptables kullanılarak uygulanır.
 - **ipvs** (varsayılan, destekleniyorsa): IP Virtual Server (ipvs) kullanılarak yapılan yük dengeleme, yüksek performans ve daha fazla özelleştirme seçeneği sunar.
 
-##### Container Runtime
+###### Container Runtime
 Containerları çalıştıran bileşendir. Kubernetes, CRI (Container Runtime Interface) uyumlu bir runtime kullanır. Örnek container runtimelar şunlardır:
 
-- Containerd
-- CRI-O
-- Rkt
-- Kata Containers (eski adıyla Clear Containers ve Hyper)
-- Virtlet
+  - Containerd
+  - CRI-O
+  - Rkt
+  - Kata Containers (eski adıyla Clear Containers ve Hyper)
+  - Virtlet
 
----
 
 Bu dokümantasyon, Kubernetes'in temel bileşenlerini ve işleyişini anlamaya yönelik bir rehberdir. Daha detaylı bilgi için Kubernetes'in [resmi dokümantasyonunu](https://kubernetes.io/docs/home/) inceleyebilirsiniz.
