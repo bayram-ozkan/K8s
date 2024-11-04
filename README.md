@@ -3,12 +3,10 @@
 Kubernetes (K8s), konteynerleştirilmiş uygulamaları otomatik olarak dağıtmak (deploy), ölçeklendirmek (scale) ve yönetmek için kullanılan açık kaynaklı bir **Infrastructure as Code (IaC)** aracıdır. Google tarafından geliştirilen bu sistem, konteyner yönetimini ve orkestrasyonunu basitleştirir ve hem bulut ortamlarında hem de yerel sunucularda çalışabilir. 
 
 
-
 ![Kubernetes Yapısı ](resimler/k8s-architecture.png)
 
 
 
----
 
 ## Cluster
 
@@ -19,6 +17,9 @@ Kubernetes platformunun temel yapı taşıdır ve birden fazla fiziksel veya san
 ### Node
 
 Kubernetes cluster'ındaki temel bileşenlerden biridir. Cluster içinde çalışan bir veya birden fazla pod'un bulunduğu fiziksel veya sanal makinedir. Master ve worker node olarak ikiye ayrılır.
+
+---
+
 
 #### Master Node
 
