@@ -1,6 +1,12 @@
 # Kubernetes (K8s)
 
-Kubernetes (K8s), containerlaştırılmış uygulamaları otomatik olarak dağıtmak (deploy), ölçeklendirmek (scale) ve yönetmek için kullanılan bir **Infrastructure as Code (IaC)** açık kaynaklı bir container orchestrator aracıdır. Google tarafından geliştirilen bu sistem, container yönetimini ve orkestrasyonunu basitleştirir ve çeşitli bulut ortamlarında veya yerel sunucularda çalışabilir. Ana bileşenleri şunlardır:
+Kubernetes (K8s), konteynerleştirilmiş uygulamaları otomatik olarak dağıtmak (deploy), ölçeklendirmek (scale) ve yönetmek için kullanılan açık kaynaklı bir **Infrastructure as Code (IaC)** aracıdır. Google tarafından geliştirilen bu sistem, konteyner yönetimini ve orkestrasyonunu basitleştirir ve hem bulut ortamlarında hem de yerel sunucularda çalışabilir. 
+
+
+
+![Kubernetes Yapısı ](resimler/k8s-architecture.png)
+
+
 
 ---
 
