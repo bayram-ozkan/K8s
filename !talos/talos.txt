@@ -10,8 +10,12 @@ talosctl cluster create --workers 3
 # talos dasboard
 talosctl dashboard --nodes 10.5.0.2
 
-
+ 
 talosctl kubeconfig    /home/yeager/.kube/talos-default -n 10.5.0.2 
 
 
 export KUBECONFIG=~/.kube/talos-default
+
+
+# talos cluster silme
+talosctl cluster destroy
