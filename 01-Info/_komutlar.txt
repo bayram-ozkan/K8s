@@ -3,7 +3,7 @@ $ kubectl get componentstatuses
 
 
 # ~/.kube/config dosyasını içeriğini gösterir.
-$ kubece config view
+$ kubectl config view
 
 
 
