@@ -127,12 +127,4 @@ minikube tunnel
 
  * LoadBalancer tipindeki servislerin harici IP ile erişilmesini sağlar. Terminal açık kalmalıdır.
 
----
 
-
-
-
-
----
-
-> ✍️ Bu rehber, yerel Kubernetes geliştirme süreçlerinde Minikube kullanımını kolaylaştırmak için hazırlanmıştır.
