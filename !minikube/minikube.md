@@ -24,7 +24,16 @@ minikube start --driver=docker
 minikube start --driver=virtualbox
 ```
 
- * VirtualBox kullanarak küme başlatır. BIOS ta sanallaştırma desteği (VMX/SVM) açık olmalıdır.
+
+> [!NOTE]
+> VirtualBox kullanarak küme başlatır. BIOS ta sanallaştırma desteği (VMX/SVM) açık olmalıdır.
+
+
+```
+eval $(minikube docker-env)
+```
+* Bu komut, Docker'ı Minikube’un içindeki Docker demonuna yönlendirir. Böylece docker build komutu imajı Minikube’un içinde oluşturur.
+
 
 
 ####  🧪 Sanallaştırma Kontrolü (Virtualization)
